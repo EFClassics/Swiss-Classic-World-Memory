@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Swiss Classic World - Win a Drive</title>
+    <style>
+        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: #0a0a0a; color: #d4af37; text-align: center; margin: 0; padding: 10px; -webkit-font-smoothing: antialiased; user-select: none; }
+        h1 { letter-spacing: 2px; font-size: 28px; text-transform: uppercase; margin-top: 10px; margin-bottom: 5px; cursor: pointer; }
+        h2 { color: #fff; font-size: 24px; margin-top: 0; }
+        
+        #timer { font-size: 36px; font-weight: bold; margin-bottom: 15px; color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.5); }
+        
+        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; max-width: 1100px; margin: 20px auto; padding: 0 10px; }
+        
+        .card { height: 160px; background: #1a1a1a; border: 2px solid #d4af37; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; overflow: hidden; transition: transform 0.2s, box-shadow 0.2s; padding: 5px; box-sizing: border-box; position: relative; }
+        .card:active { transform: scale(0.97); box-shadow: 0 0 15px rgba(212, 175, 55, 0.5); }
+        
+        .card img { width: 100%; height: 100%; object-fit: contain; object-position: center; display: none; border-radius: 8px; }
+        
+        .quest { font-size: 50px; font-weight: bold; color: #333; position: absolute; }
+        
+        .name-tag { display: none; font-size: 18px; font-weight: bold; color: #fff; line-height: 1.2; text-transform: uppercase; padding: 0 5px; }
+        
+        .card.flipped img { display: block; }
+        .card.flipped .name-tag { display: block; }
+        .card.flipped .quest { display: none; }
+        
+        .card.matched { border-color: #2ecc71; opacity: 0.25; pointer-events: none; transform: scale(0.95); }
+        
+        #start-btn-container { margin-top: 30px; }
+        
+        #lead-form { display: none; background: #1a1a1a; padding: 35px; border-radius: 20px; border: 3px solid #d4af37; max-width: 550px; width: 90%; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 100; box-shadow: 0 0 120px rgba(0,0,0,1); }
+        
+        input { width: 100%; padding: 18px; margin: 12px 0; border-radius: 10px; border: 1px solid #444; background: #222; color: white; font-size: 20px; box-sizing: border-box; }
+        input:focus { border-color: #d4af37; outline: none; }
+        
+        button { background: #d4af37; color: black; border: none; padding: 22px 50px; font-weight: bold; border-radius: 10px; cursor: pointer; font-size: 22px; text-transform: uppercase; letter-spacing: 1px; transition: background 0.2s; }
+        button:active { background: #bfa030; }
+        
+        #admin-panel { display: none; margin-top: 50px; border-top: 1px solid #222; padding-top: 40px; padding-bottom: 20px; }
+        .admin-btn { background: #222; color: #777; font-size: 15px; padding: 12px 24px; margin: 8px; border: 1px solid #333; text-transform: none; font-weight: normal; }
+        .admin-btn:hover { background: #333; color: #999; }
+        
+        .hidden { display: none !important; }
+        
+        @media (max-width: 768px) {
+            .grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+            .card { height: 120px; }
+            h1 { font-size: 24px; }
+            #timer { font-size: 30px; }
+            .name-tag { font-size: 14px; }
+            .quest { font-size: 40px; }
+        }
+    </style>
+</head>
+<body>
+
+    <h1 onclick="toggleAdmin()">🏆 Classic Car Challenge</h1>
+    <div id="timer">Zeit: 0s</div>
+    
+    <div class="grid" id="grid"></div>
+    
+    <div id="start-btn-container">
+        <button id="start-btn" onclick="startGame()">Jetzt Starten</button>
+    </div>
+
+    <div id="lead-form">
+        <h2 style="font-size: 32px;">🔥 Gratulation!</h2>
+        <p id="stats" style="font-size: 26px; color: #d4af37; margin: 15px 0; font-weight: bold;"></p>
+        <p style="color: #ccc; font-size: 18px;">Sichere dir die Chance auf den Gewinn:</p>
+        <input type="text" id="fname" placeholder="Vorname & Nachname" required>
+        <input type="email" id="femail" placeholder="E-Mail Adresse" required>
+        <input type="number" id="fage" placeholder="Dein Alter" required>
+        <button onclick="saveData()">Daten Absenden</button>
+    </div>
+
+    <div id="admin-panel">
+        <p style="color: #444; font-size: 14px; margin-bottom: 10px;">Messe-Verwaltung (Geheim-Menü)</p>
+        <button class="admin-btn" onclick="downloadCSV()">Excel/CSV Download</button>
+        <button class="admin-btn" id="clear-btn" onclick="clearData()" style="color: #c0392b; border-color: #c0392b;">Daten löschen</button>
+    </div>
+
+<script>
+    const cars = [
+        { name: 'Aston Martin DB MK III', img: 'db24.jpg' },
+        { name: 'Aston Martin DB4', img: 'db4.jpg' },
+        { name: 'Aston Martin V8 Volante', img: 'v8.jpg' },
+        { name: 'Jaguar S.S. 1.5 Litre', img: 'ss15.jpg' },
+        { name: 'Jaguar XJ-SC V12', img: 'xjsc.jpg' },
+        { name: 'Jaguar XK 120 DHC', img: 'xk120.jpg' },
+        { name: 'Jaguar XKR S/C Coupé', img: 'xkr.jpg' },
+        { name: 'Range Rover 4.0', img: 'range.jpg' },
+        { name: 'Maserati 3500 GT', img: 'maserati.jpg' },
+        { name: 'Mercedes-Benz 300 CE', img: 'mercedes.jpg' },
+        { name: 'Morgan Plus 8', img: 'morgan.jpg' },
+        { name: 'Rover P6 2000 TC', img: 'rover.jpg' }
+    ];
+
+    let flippedCards = [];
+    let matches = 0;
+    let seconds = 0;
+    let timerInterval;
+    let isLocking = false;
+    let adminClicks = 0;
+
+    function toggleAdmin() {
+        adminClicks++;
+        if (adminClicks >= 5) {
+            const panel = document.getElementById('admin-panel');
+            panel.style.display = (panel.style.display === 'block') ? 'none' : 'block';
+            adminClicks = 0;
+        }
+    }
+
+    function startGame() {
+        document.getElementById('start-btn-container').classList.add('hidden');
+        let gameItems = [];
+        let selection = cars.sort(() => 0.5 - Math.random()).slice(0, 6);
+        
+        selection.forEach(car => {
+            gameItems.push({ text: car.name, type: 'name', id: car.name });
+            gameItems.push({ img: car.img, type: 'img', id: car.name });
+        });
+
+        gameItems.sort(() => Math.random() - 0.5);
+
+        const grid = document.getElementById('grid');
+        grid.innerHTML = '';
+        matches = 0;
+        flippedCards = [];
+        isLocking = false;
+
+        gameItems.forEach(item => {
+            const card = document.createElement('div');
+            card.classList.add('card');
+            card.dataset.id = item.id;
+            
+            if(item.type === 'img') {
+                card.innerHTML = `<img src="${item.img}"><span class="quest">?</span>`;
+            } else {
+                card.innerHTML = `<div class="name-tag">${item.text}</div><span class="quest">?</span>`;
+            }
+
+            card.onclick = () => flipCard(card);
+            grid.appendChild(card);
+        });
+
+        seconds = 0;
+        document.getElementById('timer').innerText = `Zeit: ${seconds}s`;
+        clearInterval(timerInterval);
+        timerInterval = setInterval(() => { 
+             seconds++; 
+             document.getElementById('timer').innerText = `Zeit: ${seconds}s`; 
+         }, 1000);
+    }
+
+    function flipCard(card) {
+        if (isLocking) return;
+        if (card.classList.contains('flipped') || card.classList.contains('matched')) return;
+
+        card.classList.add('flipped');
+        flippedCards.push(card);
+
+        if (flippedCards.length === 2) {
+            isLocking = true;
+            setTimeout(checkMatch, 800);
+        }
+    }
+
+    function checkMatch() {
+        const [c1, c2] = flippedCards;
+        if (c1.dataset.id === c2.dataset.id) {
+            c1.classList.add('matched'); 
+            c2.classList.add('matched');
+            matches++;
+            if (matches === 6) {
+                clearInterval(timerInterval);
+                document.getElementById('stats').innerText = `${seconds} SEKUNDEN`;
+                document.getElementById('lead-form').style.display = 'block';
+            }
+        } else {
+            c1.classList.remove('flipped');
+            c2.classList.remove('flipped');
+        }
+        flippedCards = [];
+        isLocking = false;
+    }
+
+    function saveData() {
+        const nameInput = document.getElementById('fname');
+        const emailInput = document.getElementById('femail');
+        const ageInput = document.getElementById('fage');
+        
+        const name = nameInput.value.trim();
+        const email = emailInput.value.trim();
+        const age = ageInput.value.trim();
+        
+        if(!name || !email || !age) { alert("Bitte fülle alle Felder aus!"); return; }
+        if(!validateEmail(email)) { alert("Bitte gib eine gültige E-Mail Adresse ein!"); return; }
+
+        const entry = { name, email, age, time: seconds, date: new Date().toLocaleString('de-CH') };
+        let allEntries = JSON.parse(localStorage.getItem('messe_leads') || '[]');
+        allEntries.push(entry);
+        localStorage.setItem('messe_leads', JSON.stringify(allEntries));
+
+        alert("Daten gespeichert! Viel Glück.");
+        location.reload();
+    }
+
+    function validateEmail(email) {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(email);
+    }
+
+    function downloadCSV() {
+        const data = JSON.parse(localStorage.getItem('messe_leads') || '[]');
+        if(data.length === 0) { alert("Keine Daten vorhanden."); return; }
+        
+        let csvContent = "\uFEFFDatum;Name;Email;Alter;Zeit\n";
+        data.forEach(e => {
+            csvContent += `${e.date};${e.name};${e.email};${e.age};${e.time}\n`;
+        });
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", "Messe_Kontakte_SwissClassicWorld.csv");
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    function clearData() {
+        if(confirm("ACHTUNG: Alle gesammelten Kontakte werden unwiderruflich gelöscht! Hast du die Daten vorher heruntergeladen?")) {
+            localStorage.clear();
+            location.reload();
+        }
+    }
+</script>
+</body>
+</html>
