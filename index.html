@@ -1,11 +1,8 @@
-# Swiss Classic World – Optimierte HTML-Datei
-
-```html
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Swiss Classic World - Memory Challenge</title>
 
 <style>
@@ -21,21 +18,20 @@ body {
   color: #d4af37;
   font-family: Arial, Helvetica, sans-serif;
   text-align: center;
-  overflow-x: hidden;
 }
 
 h1 {
   margin-top: 10px;
-  margin-bottom: 5px;
-  font-size: 32px;
-  letter-spacing: 2px;
+  margin-bottom: 10px;
+  font-size: 30px;
   text-transform: uppercase;
+  letter-spacing: 2px;
 }
 
 #timer {
-  font-size: 42px;
-  font-weight: bold;
   color: white;
+  font-size: 38px;
+  font-weight: bold;
   margin-bottom: 20px;
 }
 
@@ -56,8 +52,8 @@ h1 {
   display: flex;
   justify-content: center;
   align-items: center;
-  cursor: pointer;
   overflow: hidden;
+  cursor: pointer;
   transition: transform 0.2s ease;
 }
 
@@ -70,11 +66,11 @@ h1 {
   height: 100%;
   object-fit: contain;
   display: none;
-  padding: 6px;
+  padding: 5px;
 }
 
 .quest {
-  font-size: 56px;
+  font-size: 60px;
   color: #333;
   font-weight: bold;
 }
@@ -84,9 +80,9 @@ h1 {
   color: white;
   font-size: 18px;
   font-weight: bold;
-  text-transform: uppercase;
   padding: 10px;
   line-height: 1.2;
+  text-transform: uppercase;
 }
 
 .card.flipped img,
@@ -104,24 +100,19 @@ h1 {
   pointer-events: none;
 }
 
-button {
+button,
+.admin-link {
   background: #d4af37;
   color: black;
   border: none;
   border-radius: 10px;
-  padding: 18px 30px;
-  font-size: 20px;
+  padding: 18px 28px;
+  font-size: 18px;
   font-weight: bold;
   cursor: pointer;
   margin-top: 15px;
-}
-
-button:active {
-  transform: scale(0.97);
-}
-
-#start-btn-container {
-  margin-top: 25px;
+  text-decoration: none;
+  display: inline-block;
 }
 
 #lead-form {
@@ -131,22 +122,22 @@ button:active {
   left: 50%;
   transform: translate(-50%, -50%);
   width: 92%;
-  max-width: 600px;
+  max-width: 620px;
   background: #1a1a1a;
   border: 3px solid #d4af37;
   border-radius: 18px;
   padding: 30px;
-  z-index: 1000;
+  z-index: 999;
 }
 
 #lead-form h2 {
   color: white;
-  font-size: 34px;
+  font-size: 32px;
 }
 
 #stats {
   color: #d4af37;
-  font-size: 28px;
+  font-size: 26px;
   font-weight: bold;
 }
 
@@ -161,21 +152,22 @@ input {
   font-size: 18px;
 }
 
+.checkbox-container {
+  margin-top: 18px;
+  text-align: left;
+  color: #ccc;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.checkbox-container input {
+  width: auto;
+  margin-right: 10px;
+}
+
 #admin-panel {
   margin-top: 40px;
-  padding-bottom: 40px;
-}
-
-.admin-btn {
-  background: #222;
-  color: #ccc;
-  border: 1px solid #444;
-  margin: 6px;
-  font-size: 16px;
-}
-
-.hidden {
-  display: none !important;
+  padding-bottom: 30px;
 }
 
 @media (max-width: 900px) {
@@ -194,7 +186,7 @@ input {
   }
 
   .card {
-    height: 140px;
+    height: 135px;
   }
 
   h1 {
@@ -202,7 +194,7 @@ input {
   }
 
   #timer {
-    font-size: 30px;
+    font-size: 28px;
   }
 }
 </style>
@@ -221,23 +213,36 @@ input {
 
 <div id="lead-form">
   <h2>🔥 Gratulation!</h2>
-  <p id="stats"></p>
-  <p style="color:#ccc;">Bitte Daten eingeben:</p>
 
-  <input type="text" id="fname" placeholder="Vorname & Nachname" />
-  <input type="email" id="femail" placeholder="E-Mail Adresse" />
-  <input type="number" id="fage" placeholder="Alter" />
+  <p id="stats"></p>
+
+  <input type="text" id="fname" placeholder="Vorname & Nachname" required>
+
+  <input type="email" id="femail" placeholder="E-Mail Adresse" required>
+
+  <input type="number" id="fage" placeholder="Alter" required>
+
+  <div class="checkbox-container">
+    <label>
+      <input type="checkbox" id="privacy">
+      Ich akzeptiere mit dem Absenden meiner Daten die Allgemeinen Geschäftsbedingungen sowie die Datenschutzrichtlinien der Emil Frey Classics.
+    </label>
+  </div>
 
   <button id="save-btn">Daten absenden</button>
 </div>
 
 <div id="admin-panel">
-  <a class="admin-btn" target="_blank" href="https://docs.google.com/spreadsheets/u/0/">
-  Teilnehmerliste in Google Sheets öffnen
-</a>
+  <a class="admin-link"
+     target="_blank"
+     href="https://docs.google.com/spreadsheets/u/0/">
+     Teilnehmerliste in Google Sheets öffnen
+  </a>
 </div>
 
 <script>
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby3b4umFK38BiUFGrrgmjnzRkw_0AFIqxjyaFZ6pJjW8GcwazjcStkcJML0P9Ws7JI_vA/exec';
+
 const cars = [
   { name: 'Aston Martin DB MK III', img: 'db24.jpg' },
   { name: 'Aston Martin DB4', img: 'db4.jpg' },
@@ -255,12 +260,13 @@ const cars = [
 
 let flippedCards = [];
 let matches = 0;
+let attempts = 0;
 let seconds = 0;
 let timerInterval;
-let gameStarted = false;
 let lockBoard = false;
-let attempts = 0;
 
+const grid = document.getElementById('grid');
+const timer = document.getElementById('timer');
 const startBtn = document.getElementById('start-btn');
 const saveBtn = document.getElementById('save-btn');
 
@@ -268,17 +274,21 @@ startBtn.addEventListener('click', startGame);
 saveBtn.addEventListener('click', saveData);
 
 function startGame() {
-  if(gameStarted) return;
 
-  gameStarted = true;
   matches = 0;
-  seconds = 0;
   attempts = 0;
+  seconds = 0;
   flippedCards = [];
 
-  document.getElementById('start-btn-container').classList.add('hidden');
+  clearInterval(timerInterval);
 
-  const grid = document.getElementById('grid');
+  timerInterval = setInterval(() => {
+    seconds++;
+    timer.innerText = `Zeit: ${seconds}s`;
+  }, 1000);
+
+  document.getElementById('start-btn-container').style.display = 'none';
+
   grid.innerHTML = '';
 
   let gameItems = [];
@@ -288,13 +298,23 @@ function startGame() {
     .slice(0, 6);
 
   selection.forEach(car => {
-    gameItems.push({ type: 'img', id: car.name, img: car.img });
-    gameItems.push({ type: 'name', id: car.name, text: car.name });
+    gameItems.push({
+      type: 'img',
+      id: car.name,
+      img: car.img
+    });
+
+    gameItems.push({
+      type: 'name',
+      id: car.name,
+      text: car.name
+    });
   });
 
   gameItems.sort(() => Math.random() - 0.5);
 
   gameItems.forEach(item => {
+
     const card = document.createElement('div');
     card.className = 'card';
     card.dataset.id = item.id;
@@ -316,21 +336,10 @@ function startGame() {
 
     grid.appendChild(card);
   });
-
-  updateTimer();
-
-  clearInterval(timerInterval);
-  timerInterval = setInterval(() => {
-    seconds++;
-    updateTimer();
-  }, 1000);
-}
-
-function updateTimer() {
-  document.getElementById('timer').innerText = `Zeit: ${seconds}s`;
 }
 
 function flipCard(card) {
+
   if(lockBoard) return;
   if(card.classList.contains('flipped')) return;
   if(card.classList.contains('matched')) return;
@@ -341,14 +350,17 @@ function flipCard(card) {
   if(flippedCards.length === 2) {
     attempts++;
     lockBoard = true;
-    setTimeout(checkMatch, 800);
+
+    setTimeout(checkMatch, 700);
   }
 }
 
 function checkMatch() {
+
   const [card1, card2] = flippedCards;
 
   if(card1.dataset.id === card2.dataset.id) {
+
     card1.classList.add('matched');
     card2.classList.add('matched');
 
@@ -358,7 +370,9 @@ function checkMatch() {
       clearInterval(timerInterval);
       showLeadForm();
     }
+
   } else {
+
     card1.classList.remove('flipped');
     card2.classList.remove('flipped');
   }
@@ -368,6 +382,7 @@ function checkMatch() {
 }
 
 function showLeadForm() {
+
   document.getElementById('stats').innerHTML = `
     ${seconds} Sekunden<br>
     ${attempts} Versuche
@@ -381,10 +396,6 @@ function validateEmail(email) {
   return re.test(email);
 }
 
-function getBrowserInfo() {
-  return navigator.userAgent;
-}
-
 async function saveData() {
 
   const name = document.getElementById('fname').value.trim();
@@ -409,164 +420,19 @@ async function saveData() {
 
   const entry = {
     timestamp: new Date().toLocaleString('de-CH'),
-    name,
-    email,
-    age,
+    name: name,
+    email: email,
+    age: age,
     time: seconds,
-    attempts,
+    attempts: attempts,
     privacyAccepted: 'JA',
-    browser: navigator.userAgent,
-    device: navigator.platform
+    device: navigator.platform,
+    browser: navigator.userAgent
   };
 
   try {
 
-    await fetch('https://script.google.com/macros/s/AKfycby3b4umFK38BiUFGrrgmjnzRkw_0AFIqxjyaFZ6pJjW8GcwazjcStkcJML0P9Ws7JI_vA/exec', {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(entry)
-    });
-
-    alert('Teilnehmer erfolgreich gespeichert.');
-
-    location.reload();
-
-  } catch(error) {
-
-    console.error(error);
-    alert('Fehler beim Speichern der Daten.');
-  }
-}
-
-function escapeCSV(value) {
-  return '"' + String(value).replace(/"/g, '""') + '"';
-}
-
-// Lokale Löschfunktion entfernt – alle Daten bleiben dauerhaft in Google Sheets gespeichert.
-function clearData() {
-  const confirmDelete = confirm(
-    'ACHTUNG: Alle Teilnehmerdaten werden gelöscht!'
-  );
-
-  if(confirmDelete) {
-    localStorage.removeItem('messe_leads');
-    alert('Daten gelöscht.');
-    location.reload();
-  }
-}
-</script>
-
-</body>
-</html>
-```
-
-## Hinweise
-
-### Bilder
-Die Bilddateien müssen im gleichen Ordner liegen wie die HTML-Datei:
-
-- db24.jpg
-- db4.jpg
-- v8.jpg
-- ss15.jpg
-- xjsc.jpg
-- xk120.jpg
-- xkr.jpg
-- range.jpg
-- maserati.jpg
-- mercedes.jpg
-- morgan.jpg
-- rover.jpg
-
----
-
-## Vorteile dieser Version
-
-- Optimiert für Touchscreens
-- Funktioniert stabil in Chrome, Edge und WebOS
-- Google Sheets Online-Datenspeicherung
-- Kein localStorage
-- CSV-Export mit allen Teilnehmerdaten
-- Speicherung der Datenschutz-Zustimmung
-- Mehrere Geräte gleichzeitig möglich
-- Speichert Zeit und Versuche
-- Responsive für Tablets & TVs
-- Verbesserte Klick-Logik
-- Excel-kompatibler CSV-Export
-- WebOS-kompatibler Download
-- Doppelklick-Schutz
-- Modernisiertes Layout
-
----
-
-# Neue echte Online-Version mit Google Sheets
-
-## Wichtige Änderung
-
-Die bisherige Speicherung über `localStorage` wird vollständig entfernt.
-
-Alle Teilnehmerdaten werden nun direkt online in Google Sheets gespeichert.
-
----
-
-# HTML-Erweiterung Datenschutz
-
-## Checkbox im Formular ergänzen
-
-Direkt vor dem Button einfügen:
-
-```html
-<label style="display:block;color:#ccc;font-size:14px;margin-top:15px;text-align:left;line-height:1.5;">
-  <input type="checkbox" id="privacy" style="width:auto;margin-right:10px;">
-  Ich akzeptiere die Allgemeinen Geschäftsbedingungen sowie die Datenschutzrichtlinien der Emil Frey Classics.
-</label>
-```
-
----
-
-## saveData() ersetzen
-
-```javascript
-async function saveData() {
-
-  const name = document.getElementById('fname').value.trim();
-  const email = document.getElementById('femail').value.trim();
-  const age = document.getElementById('fage').value.trim();
-  const privacyAccepted = document.getElementById('privacy').checked;
-
-  if(!name || !email || !age) {
-    alert('Bitte alle Felder ausfüllen.');
-    return;
-  }
-
-  if(!privacyAccepted) {
-    alert('Bitte Datenschutz und AGB akzeptieren.');
-    return;
-  }
-
-  if(!validateEmail(email)) {
-    alert('Bitte gültige E-Mail Adresse eingeben.');
-    return;
-  }
-
-  const entry = {
-    timestamp: new Date().toLocaleString('de-CH'),
-    name,
-    email,
-    age,
-    time: seconds,
-    attempts,
-    privacyAccepted: 'JA',
-    browser: navigator.userAgent,
-    device: navigator.platform
-  };
-
-  try {
-
-    const response = await fetch('https://script.google.com/macros/s/AKfycby3b4umFK38BiUFGrrgmjnzRkw_0AFIqxjyaFZ6pJjW8GcwazjcStkcJML0P9Ws7JI_vA/exec', {
+    await fetch(GOOGLE_SCRIPT_URL, {
       method: 'POST',
       mode: 'no-cors',
       headers: {
@@ -581,215 +447,11 @@ async function saveData() {
 
   } catch(error) {
 
-    alert('Fehler beim Speichern der Daten.');
-
     console.error(error);
+    alert('Fehler beim Speichern der Daten.');
   }
 }
-```
+</script>
 
----
-
-# Google Apps Script erstellen
-
-## 1. Neues Google Sheet erstellen
-
-Zum Beispiel:
-
-```txt
-Swiss Classic World Teilnehmer
-```
-
----
-
-## 2. Spalten anlegen
-
-```txt
-Datum
-Name
-Email
-Alter
-Zeit
-Versuche
-Datenschutz akzeptiert
-Gerät
-Browser
-```
-
----
-
-## 3. Google Apps Script öffnen
-
-In Google Sheets:
-
-```txt
-Erweiterungen → Apps Script
-```
-
----
-
-## 4. Diesen kompletten Code einfügen
-
-```javascript
-function doPost(e) {
-
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-
-  const data = JSON.parse(e.postData.contents);
-
-  sheet.appendRow([
-    data.timestamp,
-    data.name,
-    data.email,
-    data.age,
-    data.time,
-    data.attempts,
-    data.privacyAccepted,
-    data.device,
-    data.browser
-  ]);
-
-  return ContentService
-    .createTextOutput(JSON.stringify({ result: 'success' }))
-    .setMimeType(ContentService.MimeType.JSON);
-}
-```
-
----
-
-# 5. Apps Script veröffentlichen
-
-## Deploy klicken
-
-Dann:
-
-```txt
-Neue Bereitstellung
-```
-
-Typ:
-
-```txt
-Web-App
-```
-
-Einstellungen:
-
-| Einstellung | Wert |
-|---|---|
-| Ausführen als | Ich |
-| Zugriff | Jeder |
-
-Dann:
-
-```txt
-Bereitstellen
-```
-
----
-
-# 6. Web-App URL kopieren
-
-Sie sieht ungefähr so aus:
-
-```txt
-https://script.google.com/macros/s/AKfycbxxxxxx/exec
-```
-
-Diese URL hier einfügen:
-
-```javascript
-fetch('https://script.google.com/macros/s/AKfycby3b4umFK38BiUFGrrgmjnzRkw_0AFIqxjyaFZ6pJjW8GcwazjcStkcJML0P9Ws7JI_vA/exec'
-```
-
----
-
-# CSV Export
-
-Der CSV Export erfolgt jetzt direkt über Google Sheets:
-
-## Datei → Download → CSV
-
-Dadurch sind:
-
-- alle Teilnehmer online gespeichert
-- mehrere Geräte synchronisiert
-- Datenschutzannahme enthalten
-- keine Daten lokal gespeichert
-
----
-
-# GitHub Pages Veröffentlichung
-
-## Repository erstellen
-
-Auf:
-
-https://github.com
-
----
-
-## Dateien hochladen
-
-- index.html
-- alle Bilder
-
----
-
-## GitHub Pages aktivieren
-
-```txt
-Settings → Pages
-```
-
-Dann:
-
-```txt
-Deploy from branch
-```
-
-Branch:
-
-```txt
-main
-```
-
-Ordner:
-
-```txt
-/root
-```
-
-Danach wird eure Seite live veröffentlicht.
-
----
-
-# Finale Architektur
-
-```txt
-GitHub Pages
-    ↓
-Memory Spiel
-    ↓
-Google Apps Script
-    ↓
-Google Sheets
-    ↓
-CSV Export
-```
-
----
-
-# Ergebnis
-
-Ihr habt jetzt:
-
-- echte Online-Speicherung
-- keine lokalen Daten
-- Datenschutz-Zustimmung gespeichert
-- CSV Export online
-- GitHub Hosting
-- mehrere Geräte gleichzeitig
-- WebOS-/Chrome-/Edge-Kompatibilität
-- Messebetrieb-taugliche Lösung
-
+</body>
+</html>
