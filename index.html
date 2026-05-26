@@ -1,75 +1,210 @@
 <!DOCTYPE html>
 <html lang="de">
- <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#000000">
-
-<script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./service-worker.js');
-}
-</script>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Swiss Classic World - Win a Drive</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Swiss Classic World - Memory Challenge</title>
+
 <style>
-body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: #0a0a0a; color: #d4af37; text-align: center; margin: 0; padding: 10px; -webkit-font-smoothing: antialiased; }
-h1 { letter-spacing: 2px; font-size: 28px; text-transform: uppercase; margin-top: 10px; margin-bottom: 5px; }
-h2 { color: #fff; font-size: 24px; margin-top: 0; }
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
 
-#timer { font-size: 36px; font-weight: bold; margin-bottom: 15px; color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.5); }
+body {
+  margin: 0;
+  padding: 10px;
+  background: #0a0a0a;
+  color: #d4af37;
+  font-family: Arial, Helvetica, sans-serif;
+  text-align: center;
+  overflow-x: hidden;
+}
 
-.grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; max-width: 1100px; margin: 20px auto; padding: 0 10px; }
+h1 {
+  margin-top: 10px;
+  margin-bottom: 5px;
+  font-size: 32px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
 
-/* Karten-Styling - Optimiert für Zentrierung */
-.card { height: 160px; background: #1a1a1a; border: 2px solid #d4af37; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; overflow: hidden; transition: transform 0.2s, box-shadow 0.2s; padding: 5px; box-sizing: border-box; position: relative; }
+#timer {
+  font-size: 42px;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 20px;
+}
 
-.card:active { transform: scale(0.97); box-shadow: 0 0 15px rgba(212, 175, 55, 0.5); }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
 
-/* BILD-STYLING: Komplett einpassen und zentrieren */
-.card img { width: 100%; height: 100%; object-fit: contain; object-position: center; display: none; border-radius: 8px; }
+.card {
+  position: relative;
+  background: #1a1a1a;
+  border: 2px solid #d4af37;
+  border-radius: 14px;
+  height: 180px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.2s ease;
+}
 
-/* Fragezeichen-Styling */
-.quest { font-size: 50px; font-weight: bold; color: #333; position: absolute; }
+.card:active {
+  transform: scale(0.96);
+}
 
-/* Fahrzeugnamen-Styling */
-.name-tag { display: none; font-size: 19px; font-weight: bold; color: #fff; line-height: 1.2; text-transform: uppercase; padding: 0 5px; }
+.card img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: none;
+  padding: 6px;
+}
 
-/* Flipped & Matched Status */
-.card.flipped img { display: block; }
-.card.flipped .name-tag { display: block; }
-.card.flipped .quest { display: none; }
+.quest {
+  font-size: 56px;
+  color: #333;
+  font-weight: bold;
+}
 
-.card.matched { border-color: #2ecc71; opacity: 0.25; pointer-events: none; transform: scale(0.95); }
+.name-tag {
+  display: none;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  text-transform: uppercase;
+  padding: 10px;
+  line-height: 1.2;
+}
 
-/* Formular & Buttons */
-#start-btn-container { margin-top: 30px; }
+.card.flipped img,
+.card.flipped .name-tag {
+  display: block;
+}
 
-#lead-form { display: none; background: #1a1a1a; padding: 35px; border-radius: 20px; border: 3px solid #d4af37; max-width: 550px; width: 90%; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 100; box-shadow: 0 0 120px rgba(0,0,0,1); }
+.card.flipped .quest {
+  display: none;
+}
 
-input { width: 100%; padding: 18px; margin: 12px 0; border-radius: 10px; border: 1px solid #444; background: #222; color: white; font-size: 20px; box-sizing: border-box; }
-input:focus { border-color: #d4af37; outline: none; }
+.card.matched {
+  border-color: #2ecc71;
+  opacity: 0.35;
+  pointer-events: none;
+}
 
-button { background: #d4af37; color: black; border: none; padding: 22px 50px; font-weight: bold; border-radius: 10px; cursor: pointer; font-size: 22px; text-transform: uppercase; letter-spacing: 1px; transition: background 0.2s; }
-button:active { background: #bfa030; }
+button {
+  background: #d4af37;
+  color: black;
+  border: none;
+  border-radius: 10px;
+  padding: 18px 30px;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 15px;
+}
 
-#admin-panel { margin-top: 150px; border-top: 1px solid #222; padding-top: 40px; padding-bottom: 20px; }
-.admin-btn { background: #222; color: #777; font-size: 15px; padding: 12px 24px; margin: 8px; border: 1px solid #333; text-transform: none; font-weight: normal; }
-.admin-btn:hover { background: #333; color: #999; }
+button:active {
+  transform: scale(0.97);
+}
 
-.hidden { display: none; }
+#start-btn-container {
+  margin-top: 25px;
+}
 
-/* Anpassungen für kleinere Tablets */
-@media (max-width: 768px) {
-.grid { gap: 10px; }
-.card { height: 130px; }
-h1 { font-size: 24px; }
-#timer { font-size: 30px; }
-.name-tag { font-size: 16px; }
-.quest { font-size: 40px; }
+#lead-form {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 92%;
+  max-width: 600px;
+  background: #1a1a1a;
+  border: 3px solid #d4af37;
+  border-radius: 18px;
+  padding: 30px;
+  z-index: 1000;
+}
+
+#lead-form h2 {
+  color: white;
+  font-size: 34px;
+}
+
+#stats {
+  color: #d4af37;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+input {
+  width: 100%;
+  padding: 18px;
+  margin-top: 12px;
+  border-radius: 10px;
+  border: 1px solid #444;
+  background: #222;
+  color: white;
+  font-size: 18px;
+}
+
+#admin-panel {
+  margin-top: 40px;
+  padding-bottom: 40px;
+}
+
+.admin-btn {
+  background: #222;
+  color: #ccc;
+  border: 1px solid #444;
+  margin: 6px;
+  font-size: 16px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .card {
+    height: 150px;
+  }
+}
+
+@media (max-width: 600px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .card {
+    height: 140px;
+  }
+
+  h1 {
+    font-size: 24px;
+  }
+
+  #timer {
+    font-size: 30px;
+  }
 }
 </style>
 </head>
+
 <body>
 
 <h1>🏆 Classic Car Challenge</h1>
@@ -78,163 +213,273 @@ h1 { font-size: 24px; }
 <div class="grid" id="grid"></div>
 
 <div id="start-btn-container">
-<button id="start-btn" onclick="startGame()">Jetzt Starten</button>
+  <button id="start-btn">Jetzt starten</button>
 </div>
 
 <div id="lead-form">
-<h2 style="font-size: 32px;">🔥 Gratulation!</h2>
-<p id="stats" style="font-size: 26px; color: #d4af37; margin: 15px 0; font-weight: bold;"></p>
-<p style="color: #ccc; font-size: 18px;">Sichere dir die Chance auf den Gewinn:</p>
-<input type="text" id="fname" placeholder="Vorname & Nachname" required>
-<input type="email" id="femail" placeholder="E-Mail Adresse" required>
-<input type="number" id="fage" placeholder="Dein Alter" required>
-<button onclick="saveData()">Daten Absenden</button>
+  <h2>🔥 Gratulation!</h2>
+  <p id="stats"></p>
+  <p style="color:#ccc;">Bitte Daten eingeben:</p>
+
+  <input type="text" id="fname" placeholder="Vorname & Nachname" />
+  <input type="email" id="femail" placeholder="E-Mail Adresse" />
+  <input type="number" id="fage" placeholder="Alter" />
+
+  <button id="save-btn">Daten absenden</button>
 </div>
 
 <div id="admin-panel">
-<p style="color: #333; font-size: 14px; margin-bottom: 10px;">Messe-Verwaltung</p>
-<button class="admin-btn" onclick="downloadCSV()">Excel/CSV Download</button>
-<button class="admin-btn" id="clear-btn" onclick="clearData()" style="color: #c0392b; border-color: #c0392b;">Daten löschen</button>
+  <button class="admin-btn" onclick="downloadCSV()">CSV Download</button>
+  <button class="admin-btn" onclick="clearData()">Alle Daten löschen</button>
 </div>
 
 <script>
 const cars = [
-{ name: 'Aston Martin DB MK III', img: 'db24.jpg' },
-{ name: 'Aston Martin DB4', img: 'db4.jpg' },
-{ name: 'Aston Martin V8 Volante', img: 'v8.jpg' },
-{ name: 'Jaguar S.S. 1.5 Litre', img: 'ss15.jpg' },
-{ name: 'Jaguar XJ-SC V12', img: 'xjsc.jpg' },
-{ name: 'Jaguar XK 120 DHC', img: 'xk120.jpg' },
-{ name: 'Jaguar XKR S/C Coupé', img: 'xkr.jpg' },
-{ name: 'Range Rover 4.0', img: 'range.jpg' },
-{ name: 'Maserati 3500 GT', img: 'maserati.jpg' },
-{ name: 'Mercedes-Benz 300 CE', img: 'mercedes.jpg' },
-{ name: 'Morgan Plus 8', img: 'morgan.jpg' },
-{ name: 'Rover P6 2000 TC', img: 'rover.jpg' }
+  { name: 'Aston Martin DB MK III', img: 'db24.jpg' },
+  { name: 'Aston Martin DB4', img: 'db4.jpg' },
+  { name: 'Aston Martin V8 Volante', img: 'v8.jpg' },
+  { name: 'Jaguar S.S. 1.5 Litre', img: 'ss15.jpg' },
+  { name: 'Jaguar XJ-SC V12', img: 'xjsc.jpg' },
+  { name: 'Jaguar XK 120 DHC', img: 'xk120.jpg' },
+  { name: 'Jaguar XKR S/C Coupé', img: 'xkr.jpg' },
+  { name: 'Range Rover 4.0', img: 'range.jpg' },
+  { name: 'Maserati 3500 GT', img: 'maserati.jpg' },
+  { name: 'Mercedes-Benz 300 CE', img: 'mercedes.jpg' },
+  { name: 'Morgan Plus 8', img: 'morgan.jpg' },
+  { name: 'Rover P6 2000 TC', img: 'rover.jpg' }
 ];
 
 let flippedCards = [];
 let matches = 0;
 let seconds = 0;
 let timerInterval;
+let gameStarted = false;
+let lockBoard = false;
+let attempts = 0;
+
+const startBtn = document.getElementById('start-btn');
+const saveBtn = document.getElementById('save-btn');
+
+startBtn.addEventListener('click', startGame);
+saveBtn.addEventListener('click', saveData);
 
 function startGame() {
-document.getElementById('start-btn-container').classList.add('hidden');
-document.getElementById('admin-panel').classList.add('hidden');
-let gameItems = [];
-let selection = cars.sort(() => 0.5 - Math.random()).slice(0, 6);
+  if(gameStarted) return;
 
-selection.forEach(car => {
-gameItems.push({ text: car.name, type: 'name', id: car.name });
-gameItems.push({ img: car.img, type: 'img', id: car.name });
-});
+  gameStarted = true;
+  matches = 0;
+  seconds = 0;
+  attempts = 0;
+  flippedCards = [];
 
-gameItems.sort(() => Math.random() - 0.5);
+  document.getElementById('start-btn-container').classList.add('hidden');
 
-const grid = document.getElementById('grid');
-grid.innerHTML = '';
-gameItems.forEach(item => {
-const card = document.createElement('div');
-card.classList.add('card');
-card.dataset.id = item.id;
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
 
-if(item.type === 'img') {
-card.innerHTML = `<img src="${item.img}"><span class="quest">?</span>`;
-} else {
-card.innerHTML = `<div class="name-tag">${item.text}</div><span class="quest">?</span>`;
+  let gameItems = [];
+
+  const selection = [...cars]
+    .sort(() => Math.random() - 0.5)
+    .slice(0, 6);
+
+  selection.forEach(car => {
+    gameItems.push({ type: 'img', id: car.name, img: car.img });
+    gameItems.push({ type: 'name', id: car.name, text: car.name });
+  });
+
+  gameItems.sort(() => Math.random() - 0.5);
+
+  gameItems.forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.dataset.id = item.id;
+
+    if(item.type === 'img') {
+      card.innerHTML = `
+        <img src="${item.img}" alt="${item.id}">
+        <span class="quest">?</span>
+      `;
+    } else {
+      card.innerHTML = `
+        <div class="name-tag">${item.text}</div>
+        <span class="quest">?</span>
+      `;
+    }
+
+    card.addEventListener('click', () => flipCard(card), { passive: true });
+    card.addEventListener('touchstart', () => flipCard(card), { passive: true });
+
+    grid.appendChild(card);
+  });
+
+  updateTimer();
+
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    seconds++;
+    updateTimer();
+  }, 1000);
 }
 
-card.onclick = () => flipCard(card);
-grid.appendChild(card);
-});
-
-seconds = 0;
-document.getElementById('timer').innerText = `Zeit: ${seconds}s`;
-clearInterval(timerInterval);
-timerInterval = setInterval(() => { 
-seconds++; 
-document.getElementById('timer').innerText = `Zeit: ${seconds}s`; 
-}, 1000);
+function updateTimer() {
+  document.getElementById('timer').innerText = `Zeit: ${seconds}s`;
 }
 
 function flipCard(card) {
-if (flippedCards.length < 2 && !card.classList.contains('flipped')) {
-card.classList.add('flipped');
-flippedCards.push(card);
-if (flippedCards.length === 2) setTimeout(checkMatch, 1000);
-}
+  if(lockBoard) return;
+  if(card.classList.contains('flipped')) return;
+  if(card.classList.contains('matched')) return;
+
+  card.classList.add('flipped');
+  flippedCards.push(card);
+
+  if(flippedCards.length === 2) {
+    attempts++;
+    lockBoard = true;
+    setTimeout(checkMatch, 800);
+  }
 }
 
 function checkMatch() {
-const [c1, c2] = flippedCards;
-if (c1.dataset.id === c2.dataset.id) {
-c1.classList.add('matched'); c2.classList.add('matched');
-matches++;
-if (matches === 6) {
-clearInterval(timerInterval);
-document.getElementById('stats').innerText = `${seconds} SEKUNDEN`;
-document.getElementById('lead-form').style.display = 'block';
+  const [card1, card2] = flippedCards;
+
+  if(card1.dataset.id === card2.dataset.id) {
+    card1.classList.add('matched');
+    card2.classList.add('matched');
+
+    matches++;
+
+    if(matches === 6) {
+      clearInterval(timerInterval);
+      showLeadForm();
+    }
+  } else {
+    card1.classList.remove('flipped');
+    card2.classList.remove('flipped');
+  }
+
+  flippedCards = [];
+  lockBoard = false;
 }
-} else {
-flippedCards.forEach(c => c.classList.remove('flipped'));
-}
-flippedCards = [];
-}
 
-function saveData() {
-const nameInput = document.getElementById('fname');
-const emailInput = document.getElementById('femail');
-const ageInput = document.getElementById('fage');
+function showLeadForm() {
+  document.getElementById('stats').innerHTML = `
+    ${seconds} Sekunden<br>
+    ${attempts} Versuche
+  `;
 
-const name = nameInput.value.trim();
-const email = emailInput.value.trim();
-const age = ageInput.value.trim();
-
-if(!name || !email || !age) { alert("Bitte fülle alle Felder aus!"); return; }
-if(!validateEmail(email)) { alert("Bitte gib eine gültige E-Mail Adresse ein!"); return; }
-
-const entry = { name, email, age, time: seconds, date: new Date().toLocaleString() };
-let allEntries = JSON.parse(localStorage.getItem('messe_leads') || '[]');
-allEntries.push(entry);
-localStorage.setItem('messe_leads', JSON.stringify(allEntries));
-
-alert("Daten gespeichert! Viel Glück.");
-location.reload();
+  document.getElementById('lead-form').style.display = 'block';
 }
 
 function validateEmail(email) {
-const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-return re.test(email);
+  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return re.test(email);
+}
+
+function getBrowserInfo() {
+  return navigator.userAgent;
+}
+
+function saveData() {
+  const name = document.getElementById('fname').value.trim();
+  const email = document.getElementById('femail').value.trim();
+  const age = document.getElementById('fage').value.trim();
+
+  if(!name || !email || !age) {
+    alert('Bitte alle Felder ausfüllen.');
+    return;
+  }
+
+  if(!validateEmail(email)) {
+    alert('Bitte gültige E-Mail Adresse eingeben.');
+    return;
+  }
+
+  const entry = {
+    id: Date.now(),
+    name,
+    email,
+    age,
+    time: seconds,
+    attempts,
+    browser: getBrowserInfo(),
+    device: navigator.platform,
+    date: new Date().toLocaleString('de-CH')
+  };
+
+  const allEntries = JSON.parse(localStorage.getItem('messe_leads') || '[]');
+
+  allEntries.push(entry);
+
+  localStorage.setItem('messe_leads', JSON.stringify(allEntries));
+
+  alert('Teilnehmer gespeichert. Viel Glück!');
+
+  location.reload();
+}
+
+function escapeCSV(value) {
+  return '"' + String(value).replace(/"/g, '""') + '"';
 }
 
 function downloadCSV() {
-const data = JSON.parse(localStorage.getItem('messe_leads') || '[]');
-if(data.length === 0) { alert("Keine Daten vorhanden."); return; }
+  const data = JSON.parse(localStorage.getItem('messe_leads') || '[]');
 
-// CSV Header mit BOM für korrekte Excel-Umlaute
-let csvContent = "\uFEFFDatum;Name;Email;Alter;Zeit\n";
-data.forEach(e => {
-csvContent += `${e.date};${e.name};${e.email};${e.age};${e.time}\n`;
-});
+  if(data.length === 0) {
+    alert('Keine Daten vorhanden.');
+    return;
+  }
 
-const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-const link = document.createElement("a");
-const url = URL.createObjectURL(blob);
-link.setAttribute("href", url);
-link.setAttribute("download", "Messe_Kontakte_SwissClassicWorld.csv");
-link.style.visibility = 'hidden';
-document.body.appendChild(link);
-link.click();
-document.body.removeChild(link);
+  let csv = '\uFEFF';
+  csv += 'Datum;Name;Email;Alter;Zeit (Sek.);Versuche;Gerät;Browser\n';
+
+  data.forEach(entry => {
+    csv += [
+      escapeCSV(entry.date),
+      escapeCSV(entry.name),
+      escapeCSV(entry.email),
+      escapeCSV(entry.age),
+      escapeCSV(entry.time),
+      escapeCSV(entry.attempts),
+      escapeCSV(entry.device),
+      escapeCSV(entry.browser)
+    ].join(';') + '\n';
+  });
+
+  const blob = new Blob([csv], {
+    type: 'text/csv;charset=utf-8;'
+  });
+
+  if(window.navigator.msSaveBlob) {
+    window.navigator.msSaveBlob(blob, 'SwissClassicWorld_Teilnehmer.csv');
+  } else {
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+
+    link.href = url;
+    link.download = 'SwissClassicWorld_Teilnehmer.csv';
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(url);
+  }
 }
 
 function clearData() {
-if(confirm("ACHTUNG: Alle gesammelten Kontakte werden unwiderruflich gelöscht! Hast du die Daten vorher heruntergeladen?")) {
-localStorage.clear();
-location.reload();
-}
+  const confirmDelete = confirm(
+    'ACHTUNG: Alle Teilnehmerdaten werden gelöscht!'
+  );
+
+  if(confirmDelete) {
+    localStorage.removeItem('messe_leads');
+    alert('Daten gelöscht.');
+    location.reload();
+  }
 }
 </script>
+
 </body>
 </html>
-
